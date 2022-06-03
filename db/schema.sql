@@ -30,7 +30,7 @@ SET default_table_access_method = heap;
 CREATE TABLE forum_service.forums (
     id integer NOT NULL,
     name text NOT NULL,
-    "topicKeyword" text,
+    "topickeyword" text,
     users text[]
 );
 
@@ -80,7 +80,7 @@ ALTER TABLE forum_service.users ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY
 
 -- Insert test data 
 INSERT INTO forum_service.forums(
-	name, "topicKeyword", users)
+	name, "topickeyword", users)
 	VALUES ('Політика в Україні', 'ukraine-politics', '{"user1", "user2"}'),
 	('Футбол', 'football', '{}'),
 	('Література', 'literature', '{"user2"}');

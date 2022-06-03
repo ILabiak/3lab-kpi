@@ -3,14 +3,14 @@ package forums
 import (
 	"database/sql"
 	"fmt"
-
+	"strings"
 )
 
 type Forum struct {
-	Id   int64  `json:"id"`
-	Name string `json:"name"`
-	TopicKeyword string `json:"topicKeyword"`
-	Users []string `json:"users"`
+	Id           int64   `json:"id"`
+	Name         string  `json:"name"`
+	TopicKeyword string  `json:"topickeyword"`
+	Users        []uint8 `json:"users"`
 }
 
 type Data struct {
@@ -21,8 +21,13 @@ func NewData(db *sql.DB) *Data {
 	return &Data{Db: db}
 }
 
-func (s *Data) ListForums() ([]*Forum, error) {
-	rows, err := s.Db.Query("SELECT id, name, topicKeyword, users FROM forum_service.forums LIMIT 200")
+func ListForumssss(db *sql.DB) *Data {
+	return &Data{Db: db}
+}
+
+//func (d *Data) ListForums() ([]*Forum, error) {
+func ListForums(d *Data) ([]*Forum, error) {
+	rows, err := d.Db.Query("SELECT id, name, topickeyword, users FROM forum_service.forums LIMIT 200")
 	if err != nil {
 		return nil, err
 	}
@@ -43,12 +48,25 @@ func (s *Data) ListForums() ([]*Forum, error) {
 	return res, nil
 }
 
-func (s *Data) CreateForum(name string, topicKeyword string, users []string) error {
+func CreateForum(d *Data, name string, topicKeyword string, users []string) error {
+	var query string
 	if len(name) < 1 {
 		return fmt.Errorf("forum name is not provided")
 	}
-	_, err := s.Db.Exec(`"INSERT INTO forum_service.forums(
-		name, "topicKeyword", users)
-		VALUES ('($1)', '($2)', '($3)');"`, name, topicKeyword, users)
+	if len(topicKeyword) < 1 {
+		return fmt.Errorf("forum topicKeyword is not provided")
+	}
+	if len(users) < 1 {
+		query = fmt.Sprintf(`INSERT INTO forum_service.forums(
+			name, topickeyword, users)
+			VALUES ('%s', '%s', '{}');`, name, topicKeyword)
+	} else {
+		query = fmt.Sprintf(`INSERT INTO forum_service.forums(
+			name, topickeyword, users)
+			VALUES ('%s', '%s', '{%s}');`, name, topicKeyword, strings.Join(users[:], ","))
+	}
+
+	_, err := d.Db.Exec(query)
+
 	return err
 }
