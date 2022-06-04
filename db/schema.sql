@@ -122,6 +122,14 @@ ALTER TABLE ONLY forum_service.users
 
 
 --
+-- Name: users username; Type: CONSTRAINT; Schema: forum_service; Owner: postgres
+--
+
+ALTER TABLE ONLY forum_service.users
+    ADD CONSTRAINT username UNIQUE (username);
+
+
+--
 -- PostgreSQL database dump complete
 --
 

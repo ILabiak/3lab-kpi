@@ -27,7 +27,11 @@ func main() { //testing database functions
 	   		fmt.Printf("%v", err)
 	   	}
 	   	str := getArrString(res) */
-	err = forums.CreateForum(data, "lol", "kek", []string{"user1", "user3"})
+	//users :=[]uint8("user1,user3")
+	//str := []string{"user1", "user3"}
+	interests := []uint8("politics,literature")
+	//err = forums.CreateForum(data, "lol", "kek", users)
+	err = forums.CreateUser(data, "testuser", interests)
 	if err != nil {
 		fmt.Println(err)
 	}
