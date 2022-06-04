@@ -2,13 +2,21 @@ package main
 
 import (
 	//"database/sql"
+	"database/sql"
+	"flag"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
 
 	"github.com/ILabiak/3lab-kpi/pkg/db"
 	"github.com/ILabiak/3lab-kpi/pkg/forums"
 )
 
-func main() { //testing database functions
+var httpPortNumber = flag.Int("p", 8080, "HTTP port number")
+
+func NewDbConnection() (*sql.DB, error) {
 	conn := db.Connection{
 		DbName:     "forumsdb",
 		User:       "postgres",
@@ -17,23 +25,43 @@ func main() { //testing database functions
 		Port:       "5050",
 		DisableSSL: true,
 	}
-	db, err := conn.Open()
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	data := forums.NewData(db)
-	/* 	res, err := forums.ListForums(data)
-	   	if err != nil {
-	   		fmt.Printf("%v", err)
-	   	}
-	   	str := getArrString(res) */
-	//users :=[]uint8("user1,user3")
-	//str := []string{"user1", "user3"}
-	interests := []uint8("politics,literature")
-	//err = forums.CreateForum(data, "lol", "kek", users)
-	err = forums.CreateUser(data, "testuser", interests)
-	if err != nil {
-		fmt.Println(err)
+	return conn.Open()
+}
+
+func main() { //testing database functions
+	flag.Parse()
+
+	// db, err := NewDbConnection()
+	// if err != nil {
+	// 	fmt.Printf("%v", err)
+	// }
+	// data := forums.NewData(db)
+	// interests := []uint8("politics,literature")
+	// err = forums.CreateUser(data, "testuser", interests)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+
+	if server, err := ComposeApiServer(HttpPortNumber(*httpPortNumber)); err == nil {
+		go func() {
+			log.Println("Starting chat server...")
+
+			err := server.Start()
+			if err == http.ErrServerClosed {
+				log.Printf("HTTP server stopped")
+			} else {
+				log.Fatalf("Cannot start HTTP server: %s", err)
+			}
+		}()
+		sigChannel := make(chan os.Signal, 1)
+		signal.Notify(sigChannel, os.Interrupt)
+		<-sigChannel
+
+		if err := server.Stop(); err != nil && err != http.ErrServerClosed {
+			log.Printf("Error stopping the server: %s", err)
+		}
+	} else {
+		log.Fatalf("Cannot initialize chat server: %s", err)
 	}
 
 }
