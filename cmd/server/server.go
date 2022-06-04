@@ -9,7 +9,7 @@ import (
 )
 
 type HttpPortNumber int
-type ChatApiServer struct {
+type ForumsApiServer struct {
 	Port HttpPortNumber
 
 	ForumsHandler forums.HttpHandlerFunc
@@ -17,7 +17,7 @@ type ChatApiServer struct {
 	server *http.Server
 }
 
-func (s *ChatApiServer) Start() error {
+func (s *ForumsApiServer) Start() error {
 	if s.ForumsHandler == nil {
 		return fmt.Errorf("Forums HTTP handler is not defined - cannot start")
 	}
@@ -26,7 +26,7 @@ func (s *ChatApiServer) Start() error {
 	}
 
 	handler := new(http.ServeMux)
-	handler.HandleFunc("/channels", s.ForumsHandler)
+	handler.HandleFunc("/forums", s.ForumsHandler)
 
 	s.server = &http.Server{
 		Addr:    fmt.Sprintf(":%d", s.Port),
@@ -36,7 +36,7 @@ func (s *ChatApiServer) Start() error {
 	return s.server.ListenAndServe()
 }
 
-func (s *ChatApiServer) Stop() error {
+func (s *ForumsApiServer) Stop() error {
 	if s.server == nil {
 		return fmt.Errorf("server was not started")
 	}
