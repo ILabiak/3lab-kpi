@@ -2,9 +2,6 @@ package main
 
 import "github.com/ILabiak/3lab-kpi/pkg/forums"
 
-//"fmt"
-//forums2 "github.com/ILabiak/3lab-kpi/pkg/forums"
-
 func ComposeApiServer(port HttpPortNumber) (*ForumsApiServer, error) {
 	db, err := NewDbConnection()
 	if err != nil {
@@ -12,7 +9,7 @@ func ComposeApiServer(port HttpPortNumber) (*ForumsApiServer, error) {
 	}
 	store := forums.NewData(db)
 	httpHandlerFunc := forums.HttpHandler(store)
-	forumsApiServer := &ChatApiServer{
+	forumsApiServer := &ForumsApiServer{
 		Port:          port,
 		ForumsHandler: httpHandlerFunc,
 	}
