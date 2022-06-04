@@ -48,22 +48,26 @@ func ListForums(d *Data) ([]*Forum, error) {
 	return res, nil
 }
 
-func CreateForum(d *Data, name string, topicKeyword string, users []string) error {
+func CreateForum(d *Data, name string, topicKeyword string, users []uint8) error {
 	var query string
+	var usersArr []string
+	for _, el := range users {
+		usersArr = append(usersArr, string(el))
+	}
 	if len(name) < 1 {
 		return fmt.Errorf("forum name is not provided")
 	}
 	if len(topicKeyword) < 1 {
 		return fmt.Errorf("forum topicKeyword is not provided")
 	}
-	if len(users) < 1 {
+	if len(usersArr) < 1 {
 		query = fmt.Sprintf(`INSERT INTO forum_service.forums(
-			name, topickeyword, users)
-			VALUES ('%s', '%s', '{}');`, name, topicKeyword)
+	  name, topickeyword, users)
+	  VALUES ('%s', '%s', '{}');`, name, topicKeyword)
 	} else {
 		query = fmt.Sprintf(`INSERT INTO forum_service.forums(
-			name, topickeyword, users)
-			VALUES ('%s', '%s', '{%s}');`, name, topicKeyword, strings.Join(users[:], ","))
+	  name, topickeyword, users)
+	  VALUES ('%s', '%s', '{%s}');`, name, topicKeyword, strings.Join(usersArr[:], ","))
 	}
 
 	_, err := d.Db.Exec(query)
