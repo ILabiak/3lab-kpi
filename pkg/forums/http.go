@@ -3,6 +3,7 @@ package forums
 import (
 	//"encoding/json"
 	"encoding/json"
+	//"fmt"
 	"log"
 	"net/http"
 
@@ -11,16 +12,16 @@ import (
 
 type HttpHandlerFunc http.HandlerFunc
 
-type UserDto struct {
-	username  string
-	interests []uint8
-}
-
 type ForumOutput struct {
 	Id           int64   `json:"id"`
 	Name         string  `json:"name"`
 	TopicKeyword string  `json:"topickeyword"`
 	Users        string `json:"users"`
+}
+
+type UserDto struct {
+	Username  string `json:"username"`
+	Interests string `json:"interests"`
 }
 
 func HttpHandler(data *Data) HttpHandlerFunc {
@@ -42,7 +43,8 @@ func handleUserCreate(r *http.Request, rw http.ResponseWriter, data *Data) {
 		tools.WriteJsonBadRequest(rw, "bad JSON payload")
 		return
 	}
-	err := CreateUser(data, u.username, u.interests)
+	uintInterests := []uint8(u.Interests)
+	err := CreateUser(data, u.Username, uintInterests)
 	if err == nil {
 		tools.WriteJsonOk(rw, &u)
 	} else {
