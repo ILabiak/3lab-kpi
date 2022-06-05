@@ -31,9 +31,9 @@ func main() {
 	fmt.Println(forums)
 
 	fmt.Println("=== Scenario 2 ===")
-	err = client.CreateUser(ctx, "my-new-channel")
+	err = client.CreateUser(ctx, "new_user")
 	if err != nil {
-		log.Fatal("Cannot create channel: ", err)
+		log.Fatal("Cannot create user: ", err)
 	}
 	fmt.Println("Created a new user")
 	forums, err = client.ListForums(ctx)

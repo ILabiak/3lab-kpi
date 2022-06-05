@@ -16,6 +16,13 @@ type UserDto struct {
 	interests []uint8
 }
 
+type ForumOutput struct {
+	Id           int64   `json:"id"`
+	Name         string  `json:"name"`
+	TopicKeyword string  `json:"topickeyword"`
+	Users        string `json:"users"`
+}
+
 func HttpHandler(data *Data) HttpHandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
@@ -45,11 +52,21 @@ func handleUserCreate(r *http.Request, rw http.ResponseWriter, data *Data) {
 }
 
 func handleListForums(data *Data, rw http.ResponseWriter) {
+	var modifiedRes []*ForumOutput
 	res, err := ListForums(data)
 	if err != nil {
 		log.Printf("Error making query to the db: %s", err)
 		tools.WriteJsonInternalError(rw)
 		return
 	}
-	tools.WriteJsonOk(rw, res)
+	for _, el := range res {
+		obj := ForumOutput{
+			Id : el.Id,
+			Name :el.Name,
+			TopicKeyword: el.TopicKeyword,
+			Users: string(el.Users),
+		}
+		modifiedRes = append(modifiedRes, &obj)
+	}
+	tools.WriteJsonOk(rw, modifiedRes)
 }

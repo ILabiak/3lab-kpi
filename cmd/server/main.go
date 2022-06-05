@@ -44,7 +44,7 @@ func main() { //testing database functions
 
 	if server, err := ComposeApiServer(HttpPortNumber(*httpPortNumber)); err == nil {
 		go func() {
-			log.Println("Starting chat server...")
+			log.Println("Starting forum server...")
 
 			err := server.Start()
 			if err == http.ErrServerClosed {
@@ -61,7 +61,7 @@ func main() { //testing database functions
 			log.Printf("Error stopping the server: %s", err)
 		}
 	} else {
-		log.Fatalf("Cannot initialize chat server: %s", err)
+		log.Fatalf("Cannot initialize forum server: %s", err)
 	}
 
 }
