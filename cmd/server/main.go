@@ -31,16 +31,16 @@ func NewDbConnection() (*sql.DB, error) {
 func main() { //testing database functions
 	flag.Parse()
 
-	// db, err := NewDbConnection()
-	// if err != nil {
-	// 	fmt.Printf("%v", err)
-	// }
-	// data := forums.NewData(db)
-	// interests := []uint8("politics,literature")
-	// err = forums.CreateUser(data, "testuser", interests)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
+/* 	 db, err := NewDbConnection()
+	 if err != nil {
+	 	fmt.Printf("%v", err)
+	 }
+	 data := forums.NewData(db)
+	 interests := []uint8("politics,literature,football")
+	 err = forums.CreateUser(data, "testuser12", interests)
+	 if err != nil {
+	 fmt.Println(err)
+	 } */
 
 	if server, err := ComposeApiServer(HttpPortNumber(*httpPortNumber)); err == nil {
 		go func() {

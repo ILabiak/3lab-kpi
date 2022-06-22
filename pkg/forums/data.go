@@ -98,16 +98,13 @@ func CreateUser(d *Data, username string, interests []uint8) error {
 		query = fmt.Sprintf(`INSERT INTO forum_service.users(
 	  username, interests)
 	  VALUES ('%s', '{%s}');`, username, strings.Join(interestsArr[:], ","))
-
-		for _, el := range interestsArr {
-			res, err := CheckInterest(d, el)
-			if err != nil {
-				fmt.Printf("%v", err)
-			}
-			for _, obj := range res {
-				if obj.Id != 0 {
-					forumIds = append(forumIds, obj.Id)
-				}
+		res, err := CheckInterest(d, interestsArr)
+		if err != nil {
+			fmt.Printf("%v", err)
+		}
+		for _, obj := range res {
+			if obj.Id != 0 {
+				forumIds = append(forumIds, obj.Id)
 			}
 		}
 
@@ -115,13 +112,12 @@ func CreateUser(d *Data, username string, interests []uint8) error {
 	}
 
 	_, err := d.Db.Exec(query)
-
 	return err
 }
 
-func CheckInterest(d *Data, interest string) ([]*InterestForum, error) {
+func CheckInterest(d *Data, interests []string) ([]*InterestForum, error) {
 	query := fmt.Sprintf(`SELECT id FROM forum_service.forums 
-		WHERE topickeyword LIKE '%s' LIMIT 200`, interest)
+		WHERE topickeyword SIMILAR TO '(%s)' LIMIT 200`, strings.Join(interests, "|"))
 	rows, err := d.Db.Query(query)
 	if err != nil {
 		return nil, err
@@ -156,13 +152,16 @@ func addUserToForums(d *Data, username string, forums []int64) error {
 			str = strings.TrimSuffix(str, "}")
 			str = strings.TrimPrefix(str, "{")
 			usersArr := strings.Split(str, ",")
-			usersArr = append(usersArr, username)
-
+			if len(usersArr) == 1 && usersArr[0] == "" {
+				usersArr[0] = username
+			} else {
+				usersArr = append(usersArr, username)
+			}
 			query = fmt.Sprintf(`UPDATE forum_service.forums
 			  SET users='{%s}'
 			  WHERE id = '%d';`, strings.Join(usersArr[:], ","), el)
-
 			_, err = d.Db.Exec(query)
+
 		}
 
 	}
